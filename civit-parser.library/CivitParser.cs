@@ -58,7 +58,7 @@ namespace civit_parser.library
             string xpathSelector = "//a[descendant::img[contains(@class, '"+classname+"')]]";
 
             Driver.Navigate().GoToUrl(authorPage.ToString());
-            System.Threading.Thread.Sleep(CivitParserSettings.DefaultPageDelay);
+            System.Threading.Thread.Sleep(CivitParserSettings.DefaultPageDelay*3);
             IWebElement viewAll = Driver.FindElement(By.XPath("//a[contains(text(), 'View all images') or .//*[contains(text(), 'View all images')]]"));
             string href = viewAll.GetAttribute("href");
             foreach (Uri u in GetImagesFromImageCollectionPage(new Uri(href), cssSelector, xpathSelector))
