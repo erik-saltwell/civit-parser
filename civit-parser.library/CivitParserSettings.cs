@@ -8,6 +8,6 @@ namespace civit_parser.library
 {
     public static class CivitParserSettings
     {
-        public static int DefaultPageDelay { get; set; } = 1000;
+        public static int DefaultPageDelay { get; set; } = 2000;
     }
 }

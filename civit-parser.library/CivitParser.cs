@@ -23,15 +23,14 @@ namespace civit_parser.library
 
         public void Reset()
         {
-            Driver.Navigate().GoToUrl("https://civitai.com");
+            BrowseTo(new Uri("https://civitai.com"), 1);
         }
 
         private IWebDriver Driver { get; set; }
 
         public ImageData ParseImagePage(Uri informationPageUrl)
         {
-            Driver.Navigate().GoToUrl(informationPageUrl.ToString());
-            System.Threading.Thread.Sleep(CivitParserSettings.DefaultPageDelay);
+            BrowseTo(informationPageUrl, 1);
             ExpandShowMores();
             List<UsedResource> resources = new List<UsedResource>();
             foreach (IWebElement resource in GetResources(Driver))
@@ -57,8 +56,7 @@ namespace civit_parser.library
             string cssSelector = "img."+classname;
             string xpathSelector = "//a[descendant::img[contains(@class, '"+classname+"')]]";
 
-            Driver.Navigate().GoToUrl(authorPage.ToString());
-            System.Threading.Thread.Sleep(CivitParserSettings.DefaultPageDelay*3);
+            BrowseTo(authorPage, 3.0); 
             IWebElement viewAll = Driver.FindElement(By.XPath("//a[contains(text(), 'View all images') or .//*[contains(text(), 'View all images')]]"));
             string href = viewAll.GetAttribute("href");
             foreach (Uri u in GetImagesFromImageCollectionPage(new Uri(href), cssSelector, xpathSelector))
@@ -69,8 +67,7 @@ namespace civit_parser.library
 
         public IEnumerable<Uri> GetImagesFromImageCollectionPage(Uri uri, string cssSelector = "img.mantine-deph6u", string xpathSelector= "//a[descendant::img[contains(@class, 'mantine-deph6u')]]")
         {
-            Driver.Navigate().GoToUrl(uri);
-            System.Threading.Thread.Sleep(CivitParserSettings.DefaultPageDelay);
+            BrowseTo(uri, 1.0);
             ForceLoadAllImages(cssSelector);
             foreach (Uri u in GetAllImages(xpathSelector))
             {
@@ -230,6 +227,12 @@ namespace civit_parser.library
             {
                 elem.Click();
             }
+        }
+
+        private void BrowseTo(Uri location, double delay_multiplier)
+        {
+            Driver.Navigate().GoToUrl(location.ToString());
+            System.Threading.Thread.Sleep( (int)(CivitParserSettings.DefaultPageDelay * delay_multiplier));
         }
 
         private IEnumerable<IWebElement> GetShowMores()

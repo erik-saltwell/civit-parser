@@ -86,12 +86,12 @@ namespace CivitParser
         {
             foreach (Uri page in GetCollectionPages())
             {
-                Console.WriteLine(page.ToString());
-                int i = 0;
+                Console.WriteLine("");
+                Console.Write(page.ToString());
                 foreach (Uri uri in parser.GetImagesFromImageCollectionPage(page))
                 {
                     if (!urls.Contains(uri)) urls.Add(uri);
-                    Console.Write(" " + i.ToString() + " ");
+                    Console.Write("*");
                 }
             }
         }
@@ -100,12 +100,12 @@ namespace CivitParser
         {
             foreach (Uri page in GetUserPages())
             {
-                Console.WriteLine(page.ToString());
-                int i = 0;
+                Console.WriteLine("");
+                Console.Write(page.ToString());
                 foreach (Uri uri in parser.GetImagesFromUserPage(page))
                 {
                     if (!urls.Contains(uri)) urls.Add(uri);
-                    Console.Write(" " + i.ToString() + " ");
+                    Console.Write("*");
                 }
             }
         }
