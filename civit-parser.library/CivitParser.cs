@@ -56,8 +56,8 @@ namespace civit_parser.library
             string cssSelector = "img."+classname;
             string xpathSelector = "//a[descendant::img[contains(@class, '"+classname+"')]]";
 
-            BrowseTo(authorPage, 3.0); 
-            IWebElement viewAll = Driver.FindElement(By.XPath("//a[contains(text(), 'View all images') or .//*[contains(text(), 'View all images')]]"));
+            BrowseTo(authorPage, 4.0); 
+            IWebElement viewAll = Driver.FindElement(By.XPath("//a[contains(text(), 'View all images') or .//*[contains(text(), 'View all images')]]"));   //!!!!!!! THIS RETURNED ZERO ELEMENTS, add a retry????
             string href = viewAll.GetAttribute("href");
             foreach (Uri u in GetImagesFromImageCollectionPage(new Uri(href), cssSelector, xpathSelector))
             {
@@ -79,14 +79,22 @@ namespace civit_parser.library
         {
             
             IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
-            js.ExecuteScript("document.body.style.zoom = '.1%'");
+            js.ExecuteScript("document.body.style.zoom = '"+ CivitParserSettings.ImageCollectionZoom.ToString() +"%'");
             int old_count = -1;
-            int new_count = Driver.FindElements(By.CssSelector(cssSelector)).Count; 
-            while(new_count != old_count)
+            int new_count = Driver.FindElements(By.CssSelector(cssSelector)).Count;
+            int j = 1;
+            while(new_count != old_count && new_count<801)
             {
-                System.Threading.Thread.Sleep(10000);
+                for (int i = 0; i < 10; i++)
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    Console.Write(i.ToString());
+                }
+                Console.Write("--");
                 old_count = new_count;
                 new_count = Driver.FindElements(By.CssSelector(cssSelector)).Count;
+                Console.Write(j.ToString() + "||" + new_count + "--");
+                ++j;
             }
             return;
 
@@ -94,7 +102,8 @@ namespace civit_parser.library
 
         private IEnumerable<Uri> GetAllImages(string xpathSelector)
         {
-           foreach (IWebElement elem in Driver.FindElements(By.XPath(xpathSelector)))
+           List<IWebElement> images = Driver.FindElements(By.XPath(xpathSelector)).ToList();
+            foreach (IWebElement elem in images)
            {
                 string txtUri = elem.GetAttribute("href");
                 if (txtUri.StartsWith("https://civitai.com/images/")) yield return new Uri(txtUri);

@@ -112,7 +112,7 @@ namespace CivitParser
 
         private static void WaitForLogon(civit_parser.library.CivitParser parser)
         {
-            for (int i = 0; i < 90; i++)
+            for (int i = 0; i < 45; i++)
             {
                 System.Threading.Thread.Sleep(1000);
                 Console.Write("*");
@@ -123,11 +123,18 @@ namespace CivitParser
         public static List<Uri> GetUserPages()
         {
             List<Uri> uris = new();
+
+            uris.Add(new Uri("https://civitai.com/user/alyla"));  // small for save testing!!!
+
+            //uris.Add(new Uri("https://civitai.com/user/haors"));
+            uris.Add(new Uri("https://civitai.com/user/Nourdal"));
+            uris.Add(new Uri("https://civitai.com/user/blacksnowskill"));
+
             uris.Add(new Uri("https://civitai.com/user/dororooo"));
             uris.Add(new Uri("https://civitai.com/user/Chimi_chan"));
-            uris.Add(new Uri("https://civitai.com/user/haors"));
+            
             uris.Add(new Uri("https://civitai.com/user/martinffm"));
-            uris.Add(new Uri("https://civitai.com/user/Nourdal"));
+            
             uris.Add(new Uri("https://civitai.com/user/LadyMystra"));
             uris.Add(new Uri("https://civitai.com/user/Wolfsangel"));
             uris.Add(new Uri("https://civitai.com/user/7whitefire7"));
@@ -152,8 +159,8 @@ namespace CivitParser
             uris.Add(new Uri("https://civitai.com/user/Stellaaa"));
             uris.Add(new Uri("https://civitai.com/user/WiseBurrito"));
             uris.Add(new Uri("https://civitai.com/user/c31x5ruq380"));
-            uris.Add(new Uri("https://civitai.com/user/alyla"));
-            uris.Add(new Uri("https://civitai.com/user/blacksnowskill"));
+            
+            
             uris.Add(new Uri("https://civitai.com/user/UNDEAD2075"));
             uris.Add(new Uri("https://civitai.com/user/sheevlord"));
             uris.Add(new Uri("https://civitai.com/user/Zanka"));
