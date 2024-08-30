@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace civit_parser.library
+﻿namespace CivitParser.Model
 {
     public static class CivitParserSettings
     {

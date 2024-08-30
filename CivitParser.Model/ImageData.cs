@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace civit_parser.library
+namespace CivitParser.Model
 {
     public enum ResourceType { lora, checkpoint, embedding, other };
 
