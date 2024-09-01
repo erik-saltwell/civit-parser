@@ -5,7 +5,9 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CivitParser", "CivitParser\CivitParser.csproj", "{6DF2230B-77E7-40D0-806A-84E8422F4F41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CivitParser.Model", "CivitParser.Model\CivitParser.Model.csproj", "{C8E973EF-3F7C-4F40-BB13-302E4003F084}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CivitParser.Model", "CivitParser.Model\CivitParser.Model.csproj", "{C8E973EF-3F7C-4F40-BB13-302E4003F084}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saltworks", "Saltworks\Saltworks.csproj", "{6AE668A9-A696-4FE7-913F-E346EDEAA951}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C8E973EF-3F7C-4F40-BB13-302E4003F084}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8E973EF-3F7C-4F40-BB13-302E4003F084}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8E973EF-3F7C-4F40-BB13-302E4003F084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AE668A9-A696-4FE7-913F-E346EDEAA951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AE668A9-A696-4FE7-913F-E346EDEAA951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AE668A9-A696-4FE7-913F-E346EDEAA951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AE668A9-A696-4FE7-913F-E346EDEAA951}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

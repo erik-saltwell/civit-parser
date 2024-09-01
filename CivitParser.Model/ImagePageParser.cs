@@ -1,88 +1,64 @@
 ﻿using OpenQA.Selenium;
+using Saltworks.Trace;
 using Serilog;
 using System.Diagnostics;
 
 namespace CivitParser.Model
 {
-    public class CivitParser
+    public class ImagePageParser : BaseCivitPageParser
     {
-        private ILogger _log;
-
-        public CivitParser(ILogger logger)
+        private static TraceLogger _log = TraceManager.Logger<ImagePageParser>();
+        public ImageData Parse(Uri informationPageUrl, ParseContext ctxt)
         {
-            _log = logger;
-        }
+            _log.Debug("In ImagePageParser.Parse for {informationPageUrl}", informationPageUrl);
+            c(ctxt);
 
-        public ImageData ParseImagePage(Uri informationPageUrl, CancellationToken cancel_token, IWebDriver driver)
-        {
-            _log.Debug("In ParseImagePage for {informationPageUrl}", informationPageUrl);
-            c(cancel_token);
+            BrowseTo(informationPageUrl, 1, ctxt);
+            c(ctxt);
 
-            BrowseTo(informationPageUrl, 1, driver);
-            c(cancel_token);
-
-            ExpandShowMores(driver, cancel_token);
-            c(cancel_token);
+            ExpandShowMores(ctxt);
+            c(ctxt);
 
             List<UsedResource> resources = [];
             _log.Debug("Extracting Resources.");
-            foreach (IWebElement resource in GetResources(driver))
+            foreach (IWebElement resource in GetResources(ctxt))
             {
                 resources.Add(ParseResource(resource));
-                c(cancel_token);
+                c(ctxt);
             }
 
-            List<OtherMetaData> otherMetaData = ParseOtherMetaData(driver, cancel_token);
-            c(cancel_token);
+            List<OtherMetaData> otherMetaData = ParseOtherMetaData(ctxt);
+            c(ctxt);
 
-            (string positive_prompt, string negative_prompt) = GetPrompts(driver);
-            c(cancel_token);
+            (string positive_prompt, string negative_prompt) = GetPrompts(ctxt);
+            c(ctxt);
 
             string id = GetIDFromURL(informationPageUrl);
-            c(cancel_token);
+            c(ctxt);
 
-            Uri imgUri = GetImageUri(driver);
-            c(cancel_token);
-            Uri authorUri = GetAuthorUri(driver);
-            c(cancel_token);
+            Uri imgUri = GetImageUri(ctxt);
+            c(ctxt);
+            Uri authorUri = GetAuthorUri(ctxt);
+            c(ctxt);
 
             return new ImageData() { UsedResources = resources.ToArray(), NegativePrompt = negative_prompt, PositivePrompt = positive_prompt, OtherMetaDatas = otherMetaData.ToArray(), InfoUrl = informationPageUrl, AuthorUri = authorUri, ImageUrl = imgUri, ID = id };
         }
 
-        private void BrowseTo(Uri uri, double delay_multiplier, IWebDriver driver)
-        {
-            _log.Information("BrowseTo: {uri}", uri);
-            driver.Navigate().GoToUrl(uri.ToString());
-            System.Threading.Thread.Sleep((int)(CivitParserSettings.DefaultPageDelay * delay_multiplier));
-        }
-
-        private void c(CancellationToken cancel_token)
-        {
-            try
-            {
-                cancel_token.ThrowIfCancellationRequested();
-            } catch (Exception)
-            {
-                _log.Warning("Cancel requested.");
-                throw;
-            }
-        }
-
-        private void ExpandShowMores(IWebDriver driver, CancellationToken cancel_token)
+        private void ExpandShowMores(ParseContext ctxt)
         {
             _log.Debug("In ExpandShowMores");
-            foreach (IWebElement elem in GetShowMores(driver))
+            foreach (IWebElement elem in GetShowMores(ctxt))
             {
                 elem.Click();
-                c(cancel_token);
+                c(ctxt);
             }
         }
 
-        private Uri GetAuthorUri(IWebDriver driver)
+        private Uri GetAuthorUri(ParseContext ctxt)
         {
             _log.Debug("In GetAuthorUri");
             string xpath = "//main/div[1]/div[2]//a[starts-with(@href, '/user/')]";
-            IWebElement imgElement = driver.FindElements(By.XPath(xpath)).First();
+            IWebElement imgElement = ctxt.Driver.FindElements(By.XPath(xpath)).First();
             string uriTxt = imgElement.GetAttribute("href");
             return new Uri(uriTxt);
         }
@@ -94,12 +70,12 @@ namespace CivitParser.Model
             return retVal;
         }
 
-        private Uri GetImageUri(IWebDriver driver)
+        private Uri GetImageUri(ParseContext ctxt)
         {
             _log.Debug("In GetImageUri");
-            int count = driver.FindElements(By.XPath("//main/div[1]/div[1]//img")).Count;
+            int count = ctxt.Driver.FindElements(By.XPath("//main/div[1]/div[1]//img")).Count;
             Debug.Assert(count == 1);
-            IWebElement imgElement = driver.FindElements(By.XPath("//main/div[1]/div[1]//img")).First();
+            IWebElement imgElement = ctxt.Driver.FindElements(By.XPath("//main/div[1]/div[1]//img")).First();
             string uriTxt = imgElement.GetAttribute("src");
             return new Uri(uriTxt);
         }
@@ -117,12 +93,12 @@ namespace CivitParser.Model
             return retVal;
         }
 
-        private (string positive_prompt, string negative_prompt) GetPrompts(IWebDriver driver)
+        private (string positive_prompt, string negative_prompt) GetPrompts(ParseContext ctxt)
         {
             _log.Debug("In GetPrompts");
             string positive = string.Empty;
             string negative = string.Empty;
-            foreach (IWebElement elem in driver.FindElements(By.XPath("//*[text()='Prompt' or  text()='Negative prompt'][1]/parent::*/parent::*")))
+            foreach (IWebElement elem in ctxt.Driver.FindElements(By.XPath("//*[text()='Prompt' or  text()='Negative prompt'][1]/parent::*/parent::*")))
             {
                 if (string.IsNullOrEmpty(positive))
                     positive = GetPositivePrompt(elem);
@@ -133,10 +109,10 @@ namespace CivitParser.Model
             return (positive, negative);
         }
 
-        private IEnumerable<IWebElement> GetResources(IWebDriver driver)
+        private IEnumerable<IWebElement> GetResources(ParseContext ctxt)
         {
             string resourcesXPath = "//*[normalize-space()='Resources used']//../following::ul//li";
-            return driver.FindElements(By.XPath(resourcesXPath));
+            return ctxt.Driver.FindElements(By.XPath(resourcesXPath));
         }
 
         private ResourceType GetResourceType(string resourceText)
@@ -149,10 +125,10 @@ namespace CivitParser.Model
             return ResourceType.other;
         }
 
-        private IEnumerable<IWebElement> GetShowMores(IWebDriver driver)
+        private IEnumerable<IWebElement> GetShowMores(ParseContext ctxt)
         {
             string xpath = "//*[starts-with(text(), \"Show\")]";
-            foreach (IWebElement elem in driver.FindElements(By.XPath(xpath)))
+            foreach (IWebElement elem in ctxt.Driver.FindElements(By.XPath(xpath)))
             {
                 yield return elem;
             }
@@ -165,13 +141,13 @@ namespace CivitParser.Model
             return (name, val);
         }
 
-        private List<OtherMetaData> ParseOtherMetaData(IWebDriver driver, CancellationToken cancel_token)
+        private List<OtherMetaData> ParseOtherMetaData(ParseContext ctxt)
         {
             _log.Debug("In ParseOtherMetaData");
             List<OtherMetaData> retVal = [];
-            foreach (IWebElement elem in driver.FindElements(By.XPath("//div[contains(text(), 'Other metadata')][1]/parent::*/following-sibling::div/div")))
+            foreach (IWebElement elem in ctxt.Driver.FindElements(By.XPath("//div[contains(text(), 'Other metadata')][1]/parent::*/following-sibling::div/div")))
             {
-                c(cancel_token);
+                c(ctxt);
                 _ = elem.Text;
                 (string name, string val) = ParseMetaDataLine(elem);
                 retVal.Add(new OtherMetaData() { Name = name, Value = val });
